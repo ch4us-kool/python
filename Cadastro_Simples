@@ -1,0 +1,205 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+import csv # Para salvar em Excell
+lista_nome = {}
+lista_apelido = {}
+lista_idade = {}
+lista_visita = {0:0}
+
+
+def menu():  # Menu
+    print ('\n1-Cadastro | 2-Remover | 3-Editar | 4-Exibir | 5-Apagar Tudo | 6-Abrir | 7-Salvar | 8-Sair\n')
+
+
+def gravacao(reg, nome, apelido, idade):  #  Cadastro, recebe valor e passa para dicionario !!
+    for i in list(lista_visita.values()):
+        try:
+            var = i + 1  # contador de visita
+            lista_nome.update({reg:nome})
+            lista_apelido.update({reg:apelido})
+            lista_idade.update({reg:idade})
+            lista_visita.update({reg:var})  # contador de visita
+            
+        except:
+            print('\nFalha no Cadastro! favor tente novamente!\n')
+            
+
+def exibir():
+    nome_key = list(lista_nome.keys())
+    nome_val = list(lista_nome.values())
+    apelido_key = list(lista_apelido.keys())
+    apelido_val = list(lista_apelido.values())
+    idade_key = list(lista_idade.keys())
+    idade_val = list(lista_idade.values())
+  
+    for i in lista_visita.keys():  # percorre os registro criados no dicionario
+       
+        try:
+            con_nome = nome_key.index(i)
+            con_apelido = apelido_key.index(i)
+            con_idade = idade_key.index(i)
+            
+            print('\nRegistro:',i)
+            print('Nome:', nome_val[con_nome])
+            print('Apelido:', apelido_val[con_apelido])
+            print('Idade:', idade_val[con_idade])
+            print('__________________\n')
+            #i = i + 1
+                
+        except:
+            print("")
+            
+
+def limpar():
+    try:
+        valid = int(input('Deseja Limpar Tudo?  1-SIM | 2-NÂO: '))
+        if valid == 1:
+            lista_nome.clear()
+            lista_apelido.clear()
+            lista_idade.clear()
+            lista_visita.clear()
+            lista_visita.update({0:0})
+            print('Limpo !')
+        else:
+            print('Ocorreu um erro !')
+            
+    except:
+        print('')
+        
+
+def edicao(registro):    #  Editar valores existente no Dict
+    nome_key = list(lista_nome.keys()) 
+    nome_val = list(lista_nome.values())
+    apelido_key = list(lista_apelido.keys())
+    apelido_val = list(lista_apelido.values())
+    idade_key = list(lista_idade.keys())
+    idade_val = list(lista_idade.values())
+    try:
+        con_nome = nome_key.index(registro)
+        con_apelido = apelido_key.index(registro)
+        con_idade = idade_key.index(registro)
+    
+        print('\nRegistro:',registro,'\n')
+        print('Nome:', nome_val[con_nome])
+        print('Apelido:', apelido_val[con_apelido])
+        print('Idade:', idade_val[con_idade])
+    
+        valor = int(input('\t1-Nome | 2-Apelido | 3-Idade | 4-Sair\nOpcao: '))
+        
+        if valor == 1:
+            ed_nome = input('Nome: ')
+            lista_nome.update({registro:ed_nome})
+            print('\nRegistro atualizado')
+        
+        elif valor == 2:
+            ed_apelido = input('Apelido: ')
+            lista_apelido.update({registro:ed_apelido})
+            print('\nRegistro atualizado')
+        
+        elif valor == 3:
+            ed_idade = input('Idade: ')
+            lista_idade.update({registro:ed_idade})
+            print('\nRegistro atualizado')
+            
+        elif valor == 4:
+            pass
+        
+        else:
+            print('Opçao invalida')
+            
+    except:
+        print('')
+            
+
+
+def remover(registro):       #  lê os valores e depois exclui
+    try:
+        lista_nome.pop(registro)
+        lista_apelido.pop(registro)
+        lista_idade.pop(registro)
+        lista_visita.pop(registro)
+        print('Excluido com Sucesso!')
+        
+    except:
+        print('')
+
+
+def salvar():  
+    nome_key = list(lista_nome.keys())
+    nome_val = list(lista_nome.values())
+    apelido_key = list(lista_apelido.keys())
+    apelido_val = list(lista_apelido.values())
+    idade_key = list(lista_idade.keys())
+    idade_val = list(lista_idade.values())
+    
+    with open('banco.csv', 'w', newline='') as arquivo:
+        for i in lista_visita.keys():  # percorre a quantidade de registro criados no Dicionario
+            
+            if (i !=0):
+                con_nome = nome_key.index(i)
+                con_apelido = apelido_key.index(i)
+                con_idade = idade_key.index(i)
+                salva = i, nome_val[con_nome], apelido_val[con_apelido], idade_val[con_idade]
+                writer = csv.writer(arquivo)
+                writer.writerow(salva)
+            
+            else:
+                print('')
+        print('Salvo com sucesso!') 
+            
+
+
+def leitura():  # Abre arquivo e carrega valores no Dict
+
+    with open('banco.csv', newline='') as reader:
+        
+        ler = csv.reader(reader)
+        
+        for i in ler:
+            
+            lista_nome.update({i[0]:i[1]})
+            lista_apelido.update({i[0]:i[2]})
+            lista_idade.update({i[0]:i[3]})
+            lista_visita.update({i[0]:i[0]})
+            
+        print('Carregado com Sucesso!')
+
+
+laco = True
+while laco:
+    menu()
+    opcao = (int(input('Opcao: ')))
+    
+    if opcao == 1:  # Cadastro
+        print('\nCadastro: \n')
+        gravacao(input('Registro: '), input('Nome: '), input('Apelido: '), input('Idade: '))
+            
+    elif opcao == 2:  # remover
+        exibir()
+        remover(input('Remover: '))
+
+    elif opcao == 3:  # Editar
+        edicao(input('Registro: '))
+
+    elif opcao == 4:  # Exibir
+        exibir()
+
+    elif opcao == 5:  # Limpar tudo
+        limpar()
+        
+    elif opcao == 6:   # abrir
+        leitura()
+        
+    elif opcao == 7:   # salvar
+        salvar()
+        
+    elif opcao == 8:   # sair do laço
+        laco = False
+        
+    else:
+        print('\nSelecione uma opção valida!')
+        
+
+
+# Projeto feito para treinamento e estudo, Lembrando todo codigo pode ser melhorado.       
